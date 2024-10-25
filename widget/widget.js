@@ -33,8 +33,8 @@ function extractFormFields(){
 
 function sortAllFields(allFields){
   allFields.sort((a,b) => {
-    const keyA = Object.keys(a)[0];
-    const keyB = Object.keys(b)[0];
+    const keyA = Object.keys(a)[0]
+    const keyB = Object.keys(b)[0]
     return keyA.localeCompare(keyB)
   })
 }
@@ -42,7 +42,7 @@ function sortAllFields(allFields){
 function execute() {
 	try {
     let allFields = []
-    let topFrame = getTopFrame()
+    const topFrame = getTopFrame()
 
     // Step 1 Scrape Fields and Create Fields list object.
     // Step 2 Add Listener for Top Frame to Receive Fields.
@@ -77,7 +77,7 @@ function execute() {
       // Child frames sends Fields up to Top Frame.
       let fields = extractFormFields()
       // send postMessage after extracting data
-      topFrame.postMessage({type:'fields', fields}, '*');
+      topFrame.postMessage({type:'fields', fields}, 'http://localhost:9999');
 
     }
 	} catch (e) {
