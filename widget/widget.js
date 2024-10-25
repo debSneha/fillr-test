@@ -31,6 +31,14 @@ function extractFormFields(){
   }
 }
 
+function sortAllFields(allFields){
+  allFields.sort((a,b) => {
+    const keyA = Object.keys(a)[0];
+    const keyB = Object.keys(b)[0];
+    return keyA.localeCompare(keyB)
+  })
+}
+
 function execute() {
 	try {
     let allFields = []
@@ -55,6 +63,8 @@ function execute() {
         }
         
         if(frameCount === totalChildFrames){
+          // sort final allfields list to pass tests
+          sortAllFields(allFields)
           // create event 
           const fieldsLoadedEvent = new CustomEvent('frames:loaded', {
             detail: { fields: allFields}
