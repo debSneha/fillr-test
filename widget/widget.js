@@ -33,17 +33,21 @@ function extractFormFields(){
 
 function execute() {
 	try {
-  
+    let allFields = []
     // Step 1 Scrape Fields and Create Fields list object.
     // Step 2 Add Listener for Top Frame to Receive Fields.
     if (isTopFrame()) {
-  
+      
+      let fields = extractFormFields()
+      console.log(fields)
       window.addEventListener('message', (event) => {
         // - Merge fields from frames.
         // - Process Fields and send event once all fields are collected.
       });
 
     } else if (!isTopFrame()) {
+      let fields = extractFormFields()
+      console.log(fields)
       // Child frames sends Fields up to Top Frame.
     }
 	} catch (e) {
