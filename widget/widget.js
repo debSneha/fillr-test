@@ -39,50 +39,28 @@ function sortAllFields(allFields){
   })
 }
 
-function getAllFrames(frame, allframes){
-  try {
-    allframes.push(frame)
-    const iframes = frame.document.querySelectorAll('iframe');
-    iframes.forEach(frame => {
-      if(frame.contentWindow) {
-        getAllFrames(frame.contentWindow, allframes)
-      }
-    })
-  }catch(e){
-    console.log(e)
-  }
-  return allframes;
-}
-
 function execute() {
 	try {
     let allFields = []
     let topFrame = getTopFrame()
-    // horrible way - need to change and find total frames
-    // probs using recursion
-    let frameCount = 0
-    const allframes = []
-    const iframes = getAllFrames(window, allframes)
-    const totalframes = iframes.length
 
     // Step 1 Scrape Fields and Create Fields list object.
     // Step 2 Add Listener for Top Frame to Receive Fields.
-    console.log(totalframes)
     if (isTopFrame()) {
       
       let fields = extractFormFields()
       allFields.push(...fields)
-      frameCount++
+
       window.addEventListener('message', (event) => {
         // - Merge fields from frames.
         // - Process Fields and send event once all fields are collected.
-        frameCount++
-
         if(event.data && event.data.type === 'fields'){
           allFields.push(...event.data.fields)
         }
         
-        if(frameCount === totalframes){
+        //wait before all the data is collected by parent frame 
+        //before dispatching fieldsLoaded event 
+        setTimeout(() => {
           // sort final allfields list to pass tests
           sortAllFields(allFields)
           // create event 
@@ -91,7 +69,7 @@ function execute() {
           })
           // dispatch event
           topFrame.document.dispatchEvent(fieldsLoadedEvent)
-        }
+        }, 1000)
         
       });
 
