@@ -52,8 +52,9 @@ function execute() {
     } else if (!isTopFrame()) {
       // Child frames sends Fields up to Top Frame.
       let fields = extractFormFields()
+      let topFrame = getTopFrame()
       // send postMessage after extracting data
-      window.top.postMessage({type:'fields', fields}, '*');
+      topFrame.postMessage({type:'fields', fields}, '*');
 
     }
 	} catch (e) {
