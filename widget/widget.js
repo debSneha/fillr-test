@@ -39,16 +39,22 @@ function execute() {
     if (isTopFrame()) {
       
       let fields = extractFormFields()
-      console.log(fields)
+      allFields.push(...fields)
       window.addEventListener('message', (event) => {
         // - Merge fields from frames.
         // - Process Fields and send event once all fields are collected.
+        if(event.data && event.data.type === 'fields'){
+          allFields.push(...event.data.fields)
+        }
+        console.log(allFields)
       });
 
     } else if (!isTopFrame()) {
-      let fields = extractFormFields()
-      console.log(fields)
       // Child frames sends Fields up to Top Frame.
+      let fields = extractFormFields()
+      // send postMessage after extracting data
+      window.top.postMessage({type:'fields', fields}, '*');
+
     }
 	} catch (e) {
 		console.error(e)
