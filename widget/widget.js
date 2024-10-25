@@ -35,7 +35,9 @@ function execute() {
 	try {
     let allFields = []
     let topFrame = getTopFrame()
-    let totalFrames = window.top.frames.length
+    // horrible way - need to change and find total frames
+    // probs using recursion
+    const totalChildFrames = 2
     let frameCount = 0
     // Step 1 Scrape Fields and Create Fields list object.
     // Step 2 Add Listener for Top Frame to Receive Fields.
@@ -52,7 +54,7 @@ function execute() {
           allFields.push(...event.data.fields)
         }
         
-        if(frameCount === totalFrames){
+        if(frameCount === totalChildFrames){
           // create event 
           const fieldsLoadedEvent = new CustomEvent('frames:loaded', {
             detail: { fields: allFields}
