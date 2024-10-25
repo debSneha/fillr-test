@@ -34,6 +34,7 @@ function extractFormFields(){
 function execute() {
 	try {
     let allFields = []
+    let topFrame = getTopFrame()
     // Step 1 Scrape Fields and Create Fields list object.
     // Step 2 Add Listener for Top Frame to Receive Fields.
     if (isTopFrame()) {
@@ -46,13 +47,19 @@ function execute() {
         if(event.data && event.data.type === 'fields'){
           allFields.push(...event.data.fields)
         }
+        
+        // create event 
+        const fieldsLoadedEvent = new CustomEvent('frames:loaded', {
+          detail: { fields: allFields}
+        })
         console.log(allFields)
+        // dispatch event
+        topFrame.document.dispatchEvent(fieldsLoadedEvent)
       });
 
     } else if (!isTopFrame()) {
       // Child frames sends Fields up to Top Frame.
       let fields = extractFormFields()
-      let topFrame = getTopFrame()
       // send postMessage after extracting data
       topFrame.postMessage({type:'fields', fields}, '*');
 
