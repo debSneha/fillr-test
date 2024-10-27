@@ -1,10 +1,4 @@
 'use strict'
-// Write your module here
-// It must send an event "frames:loaded" from the top frame containing a list of { name:label } pairs,
-// which describes all the fields in each frame.
-
-// This is a template to help you get started, feel free to make your own solution.
-
 
 // function to scrape or extract form fields 
 function extractFormFields(){
@@ -60,11 +54,9 @@ function execute() {
     let totalframes = countAllFrames(window.top)
     let frameCount = 0
 
-    // Step 1 Scrape Fields and Create Fields list object.
-    // Step 2 Add Listener for Top Frame to Receive Fields.
-    console.log(totalframes)
     if (isTopFrame()) {
       
+      // scrape fields for parent frame 
       let fields = extractFormFields()
       allFields.push(...fields)
 
@@ -76,8 +68,7 @@ function execute() {
           allFields.push(...event.data.fields)
         }
         
-        //wait before all the data is collected by parent frame 
-        //before dispatching fieldsLoaded event 
+        // dispatch frames:loaded event only after data from all child frames have been collected
         if(frameCount === totalframes){
           // sort final allfields list to pass tests
           sortAllFields(allFields)
@@ -91,18 +82,18 @@ function execute() {
       });
 
     } else if (!isTopFrame()) {
-      // Child frames sends Fields up to Top Frame.
+      
+      // scrape form fields for child frames
       let fields = extractFormFields()
+      // Child frames sends Fields up to Top Frame.
       // send postMessage after extracting data
-      topFrame.postMessage({type:'fields', fields}, '*');
+      topFrame.postMessage({type:'fields', fields}, 'http://localhost:9999/');
 
     }
 	} catch (e) {
 		console.error(e)
 	}
 }
-
-execute();
 
 // Utility functions to check and get the top frame
 // as Karma test framework changes top & context frames.
@@ -114,3 +105,5 @@ function getTopFrame() {
 function isTopFrame() {
   return window.location.pathname == '/context.html';
 }
+
+execute();
