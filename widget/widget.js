@@ -39,13 +39,30 @@ function sortAllFields(allFields){
   })
 }
 
+function countAllFrames(frameWindow) {
+  let count = 0;
+  try{
+    for (let i = 0; i < frameWindow?.frames?.length; i++) {
+      count++;
+      count += countAllFrames(frameWindow?.frames[i]);
+    }
+  }catch(e){
+    console.log("Error: ",e)
+  }
+  
+  return count;
+}
+
 function execute() {
 	try {
     let allFields = []
     const topFrame = getTopFrame()
+    let totalframes = countAllFrames(window.top)
+    let frameCount = 0
 
     // Step 1 Scrape Fields and Create Fields list object.
     // Step 2 Add Listener for Top Frame to Receive Fields.
+    console.log(totalframes)
     if (isTopFrame()) {
       
       let fields = extractFormFields()
@@ -55,12 +72,13 @@ function execute() {
         // - Merge fields from frames.
         // - Process Fields and send event once all fields are collected.
         if(event.data && event.data.type === 'fields'){
+          ++frameCount
           allFields.push(...event.data.fields)
         }
         
         //wait before all the data is collected by parent frame 
         //before dispatching fieldsLoaded event 
-        setTimeout(() => {
+        if(frameCount === totalframes){
           // sort final allfields list to pass tests
           sortAllFields(allFields)
           // create event 
@@ -69,15 +87,14 @@ function execute() {
           })
           // dispatch event
           topFrame.document.dispatchEvent(fieldsLoadedEvent)
-        }, 1000)
-        
+        }
       });
 
     } else if (!isTopFrame()) {
       // Child frames sends Fields up to Top Frame.
       let fields = extractFormFields()
       // send postMessage after extracting data
-      topFrame.postMessage({type:'fields', fields}, 'http://localhost:9999');
+      topFrame.postMessage({type:'fields', fields}, '*');
 
     }
 	} catch (e) {
